@@ -5,13 +5,20 @@
   "main": "bruskesbote.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node bruskesbote.js"
+    "start": "npm run fix:permissions && node bruskesbote.js",
+    "fix:permissions": "find node_modules/ -type d -name chrome-linux -exec chmod -R 755 {} \\;"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "puppeteer": "^21.6.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "qrcode-terminal": "^0.12.0",
     "whatsapp-web.js": "^1.23.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
