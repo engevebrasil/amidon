@@ -1,24 +1,31 @@
 {
-  "name": "botdelivery",
+  "name": "bruskesbote",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bot de atendimento WhatsApp para Smash Burger",
   "main": "bruskesbote.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run fix:permissions && node bruskesbote.js",
-    "fix:permissions": "find node_modules/ -type d -name chrome-linux -exec chmod -R 755 {} \\;"
+    "start": "node bruskesbote.js",
+    "dev": "nodemon bruskesbote.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "puppeteer"
+  ],
+  "author": "Seu Nome",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^21.6.0",
+    "puppeteer": "^21.11.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "whatsapp-web.js": "^1.23.0",
     "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.23.0"
+    "fs": "0.0.1-security",
+    "path": "^0.12.7"
   },
   "engines": {
-    "node": "18.x"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
