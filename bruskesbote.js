@@ -2,10 +2,17 @@ const qrcode = require('qrcode-terminal');
 const { Client, MessageMedia } = require('whatsapp-web.js');
 const path = require('path');
 const fs = require('fs');
+const { chromium } = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
+// Configuração do Puppeteer Stealth
+chromium.use(StealthPlugin());
+
+// Inicialização do cliente WhatsApp
 const client = new Client();
 let carrinhos = {}; // { "5511999999999": {itens: [], estado: "...", ultimoEnvioPdf: timestamp, atendenteTimer: null} }
 
+// Cardápio do restaurante
 const cardapio = {
     lanches: [
         { id: 1, nome: "🍔 Smash Burger Clássico", preco: 20.00 },
@@ -25,11 +32,25 @@ const cardapio = {
 
 const PDF_PATH = '/home/engeve/Documentos/botdelivery/cardapio.pdf';
 
+// Inicializa o Puppeteer
+let browser;
+(async () => {
+    browser = await chromium.launch({
+        headless: 'new',
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--single-process'
+        ]
+    });
+})();
+
+// Funções auxiliares
 function formatarTroco(troco) {
     if (troco.toLowerCase() === 'não' || troco.toLowerCase() === 'nao') {
         return 'não';
     }
-    // Extrai números e formata como R$ XX,XX
     const numeros = troco.replace(/[^\d,.]/g, '').replace('.', ',');
     const partes = numeros.split(',');
     let inteiro = partes[0] || '0';
@@ -45,24 +66,17 @@ function gerarCupomFiscal(itens, endereco, formaPagamento = null, troco = null) 
     
     let cupom = `SMASH BURGER - Pedido em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}\n\n`;
 
-    // Itens
     cupom += "ITENS:\n";
     itens.forEach(item => {
         cupom += `${item.id}. ${item.nome} - R$ ${item.preco.toFixed(2).replace('.', ',')}\n`;
     });
 
-    // Totais
     cupom += `\nSubtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}`;
     cupom += `\nTaxa de Entrega (10%): R$ ${taxaEntrega.toFixed(2).replace('.', ',')}`;
     cupom += `\nTOTAL: R$ ${total.toFixed(2).replace('.', ',')}\n`;
-
-    // Endereço
     cupom += `\nENDEREÇO:\n${endereco}\n`;
-
-    // Pagamento
     cupom += `\nFORMA DE PAGAMENTO:\n${formaPagamento}\n`;
 
-    // Troco (se dinheiro)
     if (formaPagamento === "1. Dinheiro 💵" && troco) {
         cupom += `\nTroco para: ${formatarTroco(troco)}`;
     }
@@ -103,6 +117,7 @@ function mostrarOpcoes() {
            "🔢 Digite o número da opção:";
 }
 
+// Eventos do WhatsApp
 client.on('qr', qr => qrcode.generate(qr, {small: true}));
 client.on('ready', () => console.log('🤖 Bot pronto e operacional!'));
 
@@ -315,4 +330,5 @@ async function confirmarPedido(sender) {
     }, 30 * 60 * 1000);
 }
 
+// Inicializa o cliente WhatsApp
 client.initialize();
