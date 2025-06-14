@@ -1,24 +1,21 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@nixpacks/railway",
-      "config": {
-        "installCommand": "npm install --legacy-peer-deps",
-        "buildCommand": "npm run build",
-        "startCommand": "npm start"
-      }
+  "build": {
+    "builder": "@nixpacks/railway",
+    "config": {
+      "installCommand": "npm install --legacy-peer-deps",
+      "buildCommand": "npm run build",
+      "startCommand": "npm start"
     }
-  ],
+  },
   "deploy": {
     "startCommand": "node bruskesbote.js",
     "restartPolicy": {
       "maxRetries": 5,
-      "delay": "10s"
+      "delaySeconds": 10
     },
     "healthcheckPath": "/health",
-    "healthcheckTimeout": "30s"
+    "healthcheckTimeoutSeconds": 30
   },
   "variables": {
     "NODE_ENV": "production",
